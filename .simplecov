@@ -1,9 +1,11 @@
-require '../../simplecov_profiles'
-
 SimpleCov.start do
-  load_profile 'tef_basic'
 
-  if ENV['SIMPLECOV_COVERAGE_DIR']
-    SimpleCov.coverage_dir(ENV['SIMPLECOV_COVERAGE_DIR'])
-  end
+  # Don't need to track test code
+  add_filter '/spec/'
+  add_filter '/features/'
+
+  #Ignore results that are older than 10 minutes
+  merge_timeout 600
+
+  SimpleCov.command_name 'res_man'
 end

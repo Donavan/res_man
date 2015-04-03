@@ -12,6 +12,14 @@ end
 
 namespace 'res_man' do
 
+  task :clear_coverage do
+    puts 'Clearing old code coverage results...'
+
+    # Remove previous coverage results so that they don't get merged into the new results
+    code_coverage_directory = File.join(File.dirname(__FILE__), 'coverage')
+    FileUtils.remove_dir(code_coverage_directory, true) if File.exists?(code_coverage_directory)
+  end
+
   namespace 'cucumber' do
     desc 'Run all Cucumber tests for the gem'
     task :tests, [:command_options] do |_t, args|
@@ -36,19 +44,9 @@ namespace 'res_man' do
   end
 
   desc 'Test All The Things'
-  task :test_everything, [:command_options] do |_t, args|
+  task :test_everything, [:command_options] => :clear_coverage do |_t, args|
     Rake::Task['res_man:rspec:specs'].invoke(args[:command_options])
     Rake::Task['res_man:cucumber:tests'].invoke(args[:command_options])
-  end
-
-  desc 'Build the gem'
-  task :build do
-    system 'gem build res_man.gemspec'
-  end
-
-  desc 'Push the compiled gem to geminabox'
-  task :inabox do
-    system "gem inabox -o pkg/res_man-#{ResMan::VERSION}.gem"
   end
 
 end
