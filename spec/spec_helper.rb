@@ -6,3 +6,5 @@ require 'res_man'
 
 
 require 'etcd'
+require 'timecop'
+

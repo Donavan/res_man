@@ -1,4 +1,3 @@
-
 module ResMan
   # Represents a window of time where the state of a resource should be a known value
   class AvailabilityWindow
@@ -9,7 +8,6 @@ module ResMan
       @id = id
       @key = "#{base}/windows/#{id}"
       @store = store
-      @store.safe_create(@key, dir: true)
       @start_time_private = CachedKey.new @store, "#{@key}/start_time", 10, '00:00'
       @end_time_private = CachedKey.new @store, "#{@key}/end_time", 10, '00:00'
       @available_private = CachedKey.new @store, "#{@key}/available", 0.1, 1
@@ -57,7 +55,7 @@ module ResMan
       if val.respond_to?(:hour)
         @end_time_private.value = "#{val.hour}:#{val.min}"
       else
-        @end_time_private.value =  val
+        @end_time_private.value = val
       end
     end
 
@@ -74,7 +72,17 @@ module ResMan
 
       return false if (day_of_week != -1) && (day_of_week != ref_time.wday)
 
-      (ref_time >= start_time) &&  (ref_time <= end_time)
+      # 'freezing' time so that we don't run into issues around midnight.
+      time = Time.now
+
+      # If we made it this far then the day of the week has already been addressed and only the
+      # clock portion of the time matters
+      ref_time = Time.parse(time.to_s.sub(/\d{2}:\d{2}:\d{2}/, "#{ref_time.hour}:#{ref_time.min}:00"))
+      s_time = Time.parse(time.to_s.sub(/\d{2}:\d{2}:\d{2}/, "#{start_time.hour}:#{start_time.min}:00"))
+      e_time = Time.parse(time.to_s.sub(/\d{2}:\d{2}:\d{2}/, "#{end_time.hour}:#{end_time.min}:00"))
+
+      (ref_time >= s_time) && (ref_time <= e_time)
     end
+
   end
 end

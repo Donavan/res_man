@@ -1,3 +1,4 @@
+require 'time'
 require 'etcd'
 require 'res_man/etcd_extensions'
 require 'res_man/availability_window'
