@@ -283,7 +283,8 @@ describe 'AvailabilityWindow, Integration' do
     context 'limited to a particular day of the week' do
 
       before(:each) do
-        window.day_of_week = 3
+        window.day_of_week = 3 # Wednesday
+        Timecop.freeze(Time.parse('2015-05-06T12:00:00')) # A Wednesday
       end
 
       it 'is in a window if the provided reference time is within the start and end times of the window' do
@@ -306,7 +307,9 @@ describe 'AvailabilityWindow, Integration' do
       it 'is not in a window if the provided reference time is not on the day of the week set by the window' do
         window.start_time = Time.parse('01:00')
         window.end_time = Time.parse('02:00')
-        window.day_of_week = 6
+
+        window.day_of_week = 6 # Saturday
+        Timecop.freeze(Time.parse('2015-05-08T12:00:00')) # Not a Saturday
 
         expect(window.in_window?(Time.parse('01:00'))).to be false
         expect(window.in_window?(Time.parse('01:30'))).to be false
