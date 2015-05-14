@@ -4,8 +4,8 @@ require 'timeout'
 module ResMan
   module DSL
 
-    def initialize_resman_dsl(base, store)
-      @res_man_manager = ResMan::Manager.new(base, store)
+    def initialize_resman_dsl(base, store, client_id)
+      @res_man_manager = ResMan::Manager.new(base, store, client_id)
     end
 
     def with_resource(resource_name, timeout_in_seconds = 30)
